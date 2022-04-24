@@ -10,7 +10,7 @@ library(schoolmath)
 
 #=============== CREACIÓN/LIMPIEZA DE LA BASE DE DATOS ==================
 
-complete <- read.csv("/Users/migueln/Desktop/P-21/Microecon/LIC - Tarea 2/frmgham2.csv")
+complete <- read.csv('frmgham2.csv')
 df0 <- data.frame(complete)
 
 endline <- df0 %>% 
@@ -52,6 +52,11 @@ endline <- endline %>%
 
 #Especificación (1)
 
+#Creamos variables que necesitaremos
+endline <- endline %>% mutate(AGE_2= AGE^2,
+                              SMKR_CIG = SMKR*CIGDAY) 
+
+
 #Creamos la variable menor_50*WOMEN
 menor_50xWOMEN= endline$menor_50 * endline$WOMEN
 
@@ -65,25 +70,20 @@ mco_2 <- lm(CVD ~ AGE + WOMEN + TOTCHOL + HDLC + SYSBP + BPMEDS + SMKR + DIABETE
 es_mco_2<- sqrt(diag(vcovHC(mco_2, type = "HC1")))
 
 #Especificación (3)
-mco_3 <- lm(CVD ~ AGE + WOMEN + HDLC + SYSBP + BPMEDS + SMKR + DIABETES + log(BMI), 
+mco_3 <- lm(CVD ~ AGE + WOMEN + log(TOTCHOL) + HDLC + SYSBP + BPMEDS + SMKR + SMKR_CIG + DIABETES, 
             data = endline)
 es_mco_3<- sqrt(diag(vcovHC(mco_3, type = "HC1")))
 
 #Especificación (4)
 
-#Creamos la variable AGE^2
-AGE_2= endline$AGE^2 
 
-mco_4 <- lm(CVD ~ AGE + AGE_2 + WOMEN + TOTCHOL + HDLC + SYSBP + PREVCHD + BPMEDS + SMKR + DIABETES, 
+mco_4 <- lm(CVD ~ AGE + AGE_2 + WOMEN + log(TOTCHOL) + HDLC + SYSBP + PREVCHD + BPMEDS + SMKR + DIABETES + log(BMI), 
             data = endline)
 es_mco_4<- sqrt(diag(vcovHC(mco_4, type = "HC1")))
 
 #Especificación (5)
 
-#Creamos la variable SMKR*CIGDAY
-SMKRxCIGDAY= endline$SMKR * endline$CIGDAY
-
-mco_5 <- lm( log(TOTCHOL) ~ AGE + AGE_2 + WOMEN + SMKR + SMKRxCIGDAY + log(BMI), 
+mco_5 <- lm(log(TOTCHOL) ~ AGE + AGE_2 + WOMEN + HDLC + SYSBP + PREVCHD + BPMEDS + SMKR + DIABETES + log(BMI), 
             data = endline)
 es_mco_5 <- sqrt(diag(vcovHC(mco_5, type = "HC1")))
 
